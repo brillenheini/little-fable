@@ -26,9 +26,12 @@
 """
 
 from QTKit import NSImage
+from QTKit import QTAddImageCodecType
 from QTKit import QTMakeTime
 from QTKit import QTMovie
 from QTKit import QTTime
+
+import morse
 
 TIME_SCALE = 3
 
@@ -41,21 +44,30 @@ gap_word = QTMakeTime(7, TIME_SCALE)
 black = NSImage.alloc().initByReferencingFile_("black.jpg")
 white = NSImage.alloc().initByReferencingFile_("white.jpg")
 
-def morse_dot(movie):
-    movie.addImage_forDuration_withAttributes_(white, dot, {'QTAddImageCodecType': "jpeg"})
-    movie.addImage_forDuration_withAttributes_(black, gap_inter, {'QTAddImageCodecType': "jpeg"})
+attrs = {QTAddImageCodecType: "jpeg"}
 
-def morse_dash(movie):
-    movie.addImage_forDuration_withAttributes_(white, dash, {'QTAddImageCodecType': "jpeg"})
-    movie.addImage_forDuration_withAttributes_(black, gap_inter, {'QTAddImageCodecType': "jpeg"})
+class MorseVideoCallback(MorseCodeCallback):
+    def onDot(self):
+        movie.addImage_forDuration_withAttributes_(white, dot, attrs)
+        movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
+
+    def onDash(self):
+        movie.addImage_forDuration_withAttributes_(white, dash, attrs)
+        movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
+
+    def onPause(self):
+        movie.addImage_forDuration_withAttributes_(black, gap_letter, attrs)
+
+    def onLongPause(self):
+        movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
+        movie.updateMovieFile()
 
 def main():
     movie, error = QTMovie.alloc().initToWritableFile_error_("../fable.mov", None)
-    movie.addImage_forDuration_withAttributes_(black, gap_word, {'QTAddImageCodecType': "jpeg"})
+    movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
 
-    morse_dot(movie)
-    morse_dash(movie)
-    morse_dot(movie)
+    parser = TextToMorseCode(MorseVideoCallback())
+    parser.text2morseCode("little fable")
 
     movie.updateMovieFile()
 
