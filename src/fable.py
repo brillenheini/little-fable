@@ -25,6 +25,8 @@
 
 """
 
+import sys
+
 from QTKit import NSImage
 from QTKit import QTAddImageCodecType
 from QTKit import QTMakeTime
@@ -63,11 +65,18 @@ class MorseVideoCallback(MorseCodeCallback):
         movie.updateMovieFile()
 
 def main():
+    if len(sys.argv) != 2:
+        print "usage: fable.py filename"
+        return
+
+    with open(sys.argv[1], "r") as f:
+        text = f.read()
+
     movie, error = QTMovie.alloc().initToWritableFile_error_("../fable.mov", None)
     movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
 
     parser = TextToMorseCode(MorseVideoCallback())
-    parser.text2morseCode("little fable")
+    parser.text2morseCode(text)
 
     movie.updateMovieFile()
 
