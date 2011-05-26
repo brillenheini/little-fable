@@ -33,7 +33,8 @@ from QTKit import QTMakeTime
 from QTKit import QTMovie
 from QTKit import QTTime
 
-import morse
+from morse import MorseCodeCallback
+from morse import TextToMorseCode
 
 TIME_SCALE = 3
 
@@ -43,39 +44,42 @@ gap_inter = QTMakeTime(1, TIME_SCALE)
 gap_letter = QTMakeTime(3, TIME_SCALE)
 gap_word = QTMakeTime(7, TIME_SCALE)
 
-black = NSImage.alloc().initByReferencingFile_("black.jpg")
-white = NSImage.alloc().initByReferencingFile_("white.jpg")
+black = NSImage.alloc().initByReferencingFile_("src/black.jpg")
+white = NSImage.alloc().initByReferencingFile_("src/white.jpg")
 
 attrs = {QTAddImageCodecType: "jpeg"}
 
 class MorseVideoCallback(MorseCodeCallback):
+    def __init__(self, movie):
+       self._movie = movie
+
     def onDot(self):
-        movie.addImage_forDuration_withAttributes_(white, dot, attrs)
-        movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
+        self._movie.addImage_forDuration_withAttributes_(white, dot, attrs)
+        self._movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
 
     def onDash(self):
-        movie.addImage_forDuration_withAttributes_(white, dash, attrs)
-        movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
+        self._movie.addImage_forDuration_withAttributes_(white, dash, attrs)
+        self._movie.addImage_forDuration_withAttributes_(black, gap_inter, attrs)
 
     def onPause(self):
-        movie.addImage_forDuration_withAttributes_(black, gap_letter, attrs)
+        self._movie.addImage_forDuration_withAttributes_(black, gap_letter, attrs)
 
     def onLongPause(self):
-        movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
-        movie.updateMovieFile()
+        self._movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
+        self._movie.updateMovieFile()
 
 def main():
-    if len(sys.argv) != 2:
-        print "usage: fable.py filename"
+    if len(sys.argv) != 3:
+        print "usage: fable.py infile outfile"
         return
 
     with open(sys.argv[1], "r") as f:
         text = f.read()
 
-    movie, error = QTMovie.alloc().initToWritableFile_error_("../fable.mov", None)
+    movie, error = QTMovie.alloc().initToWritableFile_error_(sys.argv[2], None)
     movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
 
-    parser = TextToMorseCode(MorseVideoCallback())
+    parser = TextToMorseCode(MorseVideoCallback(movie))
     parser.text2morseCode(text)
 
     movie.updateMovieFile()
