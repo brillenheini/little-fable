@@ -75,6 +75,7 @@ def main():
 
     with open(sys.argv[1], "r") as f:
         text = f.read()
+    text = unicode(text, "utf-8")
 
     movie, error = QTMovie.alloc().initToWritableFile_error_(sys.argv[2], None)
     movie.addImage_forDuration_withAttributes_(black, gap_word, attrs)
