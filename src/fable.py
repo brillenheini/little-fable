@@ -22,6 +22,7 @@
 
 """Little Fable.
 
+Create a QuickTime movie with morse code from a text file.
 
 """
 
