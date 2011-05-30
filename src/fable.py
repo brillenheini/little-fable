@@ -37,7 +37,7 @@ from QTKit import QTTime
 from morse import MorseCodeCallback
 from morse import TextToMorseCode
 
-TIME_SCALE = 3
+TIME_SCALE = 2
 
 dot = QTMakeTime(1, TIME_SCALE)
 dash = QTMakeTime(3, TIME_SCALE)
