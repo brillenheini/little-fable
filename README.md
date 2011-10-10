@@ -6,7 +6,7 @@ Create a QuickTime movie with morse code from a text file.
 	usage: src/fable.py fable.txt fable.mov
 
 The movie is used to control the
-[BIX Media Facade](http://www.museum-joanneum.at/en/kunsthaus/bix-media-facade).
+[BIX Media Facade](http://www.museum-joanneum.at/en/kunsthaus/bix-media-facade/projects/taktkleine-fabel).
 The text is Franz Kafka's [A Little Fable](http://de.wikipedia.org/wiki/Kleine_Fabel).
 
 Idea by [zweintopf.net](http://www.zweintopf.net/).
